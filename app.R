@@ -9,12 +9,26 @@ library(shinyjs)
 server <- shinyServer(function(input, output,session) {
   
   player_data <- read.csv("player_data.csv")
-  players <- select(player_data,School,Year,Name,points_avg,rebounds_avg,assists_avg,blocks_avg,steals_avg,weighted_rat)
+  players <- select(player_data,School,Year,Name,points_avg,rebounds_avg,assists_avg,blocks_avg,steals_avg,position,weighted_rat)
+  players_public <- select(player_data,School,Year,Name,points_avg,rebounds_avg,assists_avg,blocks_avg,steals_avg,position)
   
   get_fantasy_ratings <- function(name1,name2,name3,name4,name5){
     rating_table <- filter(players,players$Name == name1 | players$Name == name2 | players$Name == name3 | players$Name == name4 | players$Name == name5)
     rating <- sum(rating_table$weighted_rat)
     return(rating)
+  }
+  
+  get_guards_count <- function(name1,name2,name3,name4,name5){
+    player_table <- filter(players,players$Name == name1 | players$Name == name2 | players$Name == name3 | players$Name == name4 | players$Name == name5)
+    player_table <- filter(player_table,player_table$position == "G")
+    count_guard <- count(player_table,position)
+    return(count_guard$n)
+  }
+  
+  get_position <- function(name){
+    position_school <- filter(players,players$Name == name)
+    position <- position_school$position
+    return(position)
   }
 
   
@@ -78,11 +92,76 @@ server <- shinyServer(function(input, output,session) {
         onInitialize = I('function() { this.setValue(""); }')
       ))
     
-  }) 
+  })
+  
+  
+  output$position_selector <- renderUI({
+    
+    selectizeInput(
+      inputId = "position", 
+      label = "Position:",
+      choices = as.character(unique(player_data$position)),
+      selected = unique(player_data$position)[1])
+    
+  })
+  
+  output$position_selector2 <- renderUI({
+    
+    selectizeInput(
+      inputId = "position2", 
+      label = "Position:",
+      choices = as.character(unique(player_data$position)),
+      options = list(
+        placeholder = 'Select a position below',
+        onInitialize = I('function() { this.setValue(""); }')
+      ))
+    
+  })
+  
+  output$position_selector3 <- renderUI({
+    
+    selectizeInput(
+      inputId = "position3", 
+      label = "Position:",
+      choices = as.character(unique(player_data$position)),
+      options = list(
+        placeholder = 'Select a position below',
+        onInitialize = I('function() { this.setValue(""); }')
+      ))
+    
+  })
+  
+  output$position_selector4 <- renderUI({
+    
+    selectizeInput(
+      inputId = "position4", 
+      label = "Position:",
+      choices = as.character(unique(player_data$position)),
+      options = list(
+        placeholder = 'Select a position below',
+        onInitialize = I('function() { this.setValue(""); }')
+      ))
+    
+  })
+  
+  output$position_selector5 <- renderUI({
+    
+    selectizeInput(
+      inputId = "position5", 
+      label = "Position:",
+      choices = as.character(unique(player_data$position)),
+      options = list(
+        placeholder = 'Select a position below',
+        onInitialize = I('function() { this.setValue(""); }')
+      ))
+    
+  })
   
   output$player_selector <- renderUI({
     
-    available <- player_data[player_data$School == input$School, "Name"]
+    player_data <- filter(player_data,player_data$School == input$School)
+    available <- player_data[player_data$position == input$position,"Name"]
+  
     
     selectInput(
       inputId = "Name", 
@@ -94,66 +173,60 @@ server <- shinyServer(function(input, output,session) {
   
   output$player_selector2 <- renderUI({
     
-    available <- player_data[player_data$School == input$School2, "Name"]
+    player_data <- filter(player_data,player_data$School == input$School2)
+    available <- player_data[player_data$position == input$position2, "Name"]
     
     selectizeInput(
       inputId = "Name2", 
       label = "Player Name:",
       choices = unique(available),
-      options = list(
-        placeholder = 'Select a player below',
-        onInitialize = I('function() { this.setValue(""); }')
-      )
-      )
+      selected = unique(available)[1])
     
   })
   
   output$player_selector3 <- renderUI({
     
-    available <- player_data[player_data$School == input$School3, "Name"]
+    player_data <- filter(player_data,player_data$School == input$School3)
+    available <- player_data[player_data$position == input$position3, "Name"]
     
     selectizeInput(
       inputId = "Name3", 
       label = "Player Name:",
       choices = unique(available),
-      options = list(
-        placeholder = 'Select a player below',
-        onInitialize = I('function() { this.setValue(""); }')
-      ))
+      selected = unique(available)[1])
     
   })
   
   output$player_selector4 <- renderUI({
     
-    available <- player_data[player_data$School == input$School4, "Name"]
+    player_data <- filter(player_data,player_data$School == input$School4)
+    available <- player_data[player_data$position == input$position4, "Name"]
     
     selectizeInput(
       inputId = "Name4", 
       label = "Player Name:",
       choices = unique(available),
-      options = list(
-        placeholder = 'Select a player below',
-        onInitialize = I('function() { this.setValue(""); }')
-      ))
-    
+      selected = unique(available)[1])
   })
   
   output$player_selector5 <- renderUI({
     
-    available <- player_data[player_data$School == input$School5, "Name"]
+    player_data <- filter(player_data,player_data$School == input$School5)
+    available <- player_data[player_data$position == input$position5, "Name"]
     
     selectizeInput(
       inputId = "Name5", 
       label = "Player Name:",
       choices = unique(available),
-      options = list(
-        placeholder = 'Select a player below',
-        onInitialize = I('function() { this.setValue(""); }')
-      ))
+      selected = unique(available)[1])
     
   })
   
   output$radar_chart1 <- renderPlot({
+    
+    validate(
+      need(input$Name != "", "No Center in this team")
+    )
     
     player <- filter(players, players$Name == input$Name)
 
@@ -161,7 +234,7 @@ server <- shinyServer(function(input, output,session) {
     
     maxmin <- data.frame(
       
-      points=c(15, 0),
+      points=c(17, 0),
       
       rebounds=c(8, 0),
       
@@ -218,7 +291,7 @@ server <- shinyServer(function(input, output,session) {
     
     maxmin <- data.frame(
       
-      points=c(15, 0),
+      points=c(17, 0),
       
       rebounds=c(8, 0),
       
@@ -274,7 +347,7 @@ server <- shinyServer(function(input, output,session) {
     
     maxmin <- data.frame(
       
-      points=c(15, 0),
+      points=c(17, 0),
       
       rebounds=c(8, 0),
       
@@ -330,7 +403,7 @@ server <- shinyServer(function(input, output,session) {
     
     maxmin <- data.frame(
       
-      points=c(15, 0),
+      points=c(17, 0),
       
       rebounds=c(8, 0),
       
@@ -386,7 +459,7 @@ server <- shinyServer(function(input, output,session) {
     
     maxmin <- data.frame(
       
-      points=c(15, 0),
+      points=c(17, 0),
       
       rebounds=c(8, 0),
       
@@ -448,16 +521,25 @@ server <- shinyServer(function(input, output,session) {
   })
   
   output$result5 <- renderText({
-    paste("For player 5 you choose", input$Name5)
+    paste("For player 5 you choose", input$Name5, "<br>", "Position:", get_position(input$Name5))
   })
 
   output$row <- renderPrint({
-    players %>% filter(Name == input$Name | Name == input$Name2 | Name == input$Name3 | Name == input$Name4 | Name == input$Name5)
+    players_public %>% filter(Name == input$Name | Name == input$Name2 | Name == input$Name3 | Name == input$Name4 | Name == input$Name5)
   })
   
   observeEvent(input$create, {
     toggle('text_div')
     output$text <- renderText({
+      validate(
+        need(input$Name, 'Player 1 not selected'),
+        need(input$Name2, 'Player 2 not selected'),
+        need(input$Name3, 'Player 3 not selected'),
+        need(input$Name4, 'Player 4 not selected'),
+        need(input$Name5, 'Player 5 not selected'),
+        need(get_guards_count(input$Name,input$Name2,input$Name3,input$Name4,input$Name5) < 4, 'Too many guards')
+        
+      )
       get_fantasy_ratings(input$Name,input$Name2,input$Name3,input$Name4,input$Name5)
       
     })
@@ -467,6 +549,32 @@ server <- shinyServer(function(input, output,session) {
     shinyjs::reset("form")
   })
   
+  output$player <- renderPrint({
+    player_rank <- arrange(players,desc(weighted_rat))
+    player_rank <-player_rank %>% select(Name,School,position)
+    head(player_rank, n=5)
+  })
+  
+  output$teams <- renderPrint({
+    by_team <- group_by(players,School) %>% 
+      summarise(Rating = mean(weighted_rat)) %>% 
+      as.data.frame
+    by_team <- arrange(by_team,desc(Rating))
+    by_team <- select(by_team,School)
+    head(by_team, n= 10)
+  })
+  
+  
+  
+  output$nba <- renderPrint({
+    name <- c("Doug McDermott","Kyle Anderson","Montrezl Harrell","Russ Smith","Julius Randle")
+    team <- c("New York Knicks","San Antonio Spurs","Houston Rockets","New Orleans Pelicans","Los Angeles Lakers")
+    pick <- c(11,30,32,47,7)
+    year <-c(2014,2014,2014,2014,2014)
+    nba <- data.frame(name, team, pick,year)
+    nba
+  })
+  
 })
 
 ui <-fluidPage(useShinyjs(), 
@@ -474,35 +582,40 @@ ui <-fluidPage(useShinyjs(),
   sidebarPanel(
     div(
       id = "form",
-    helpText(" Each player you choose will generate a radar cart on the right to visualize this player's skill"),
+    helpText(" Note: You can not choose more than 3 guards"),
     h4("Player 1"),
     htmlOutput("school_selector"),
+    htmlOutput("position_selector"),
     htmlOutput("player_selector"),
     textOutput("result"),
   
     br(),
     h4("Player 2"),
     htmlOutput("school_selector2"),
+    htmlOutput("position_selector2"),
     htmlOutput("player_selector2"),
     textOutput("result2"),
   
   br(),
   h4("Player 3"),
   htmlOutput("school_selector3"),
+  htmlOutput("position_selector3"),
   htmlOutput("player_selector3"),
   textOutput("result3"),
 
 br(),
 h4("Player 4"),
 htmlOutput("school_selector4"),
+htmlOutput("position_selector4"),
 htmlOutput("player_selector4"),
 textOutput("result4"),
 
 br(),
 h4("Player 5"),
 htmlOutput("school_selector5"),
+htmlOutput("position_selector5"),
 htmlOutput("player_selector5"),
-textOutput("result5"),
+htmlOutput("result5"),
 
 br(),
 actionButton("create", "Create Fantasy Team"),
@@ -514,7 +627,7 @@ hidden(
   )
 ),
 br(),
-actionButton("refresh", "Startover")
+actionButton("refresh", "Restart")
 )
 ),
 
@@ -527,6 +640,9 @@ actionButton("refresh", "Startover")
                 tabPanel("Fantasy Team", 
                          br(),
                          p("Wlecome to the NCAA Fantasy Team app, here you can create your fantasy team by slecting 5 players from different teams and you can will get a fianl score after you click 'CREATE'"),
+                         p("Each player you choose will generate a radar cart on the right to visualize this player's skill"),
+                         p("(This app use NCAA player and team data from 2014-2015 season)"),
+                         
                          br(),
                          verbatimTextOutput('row'),
                          fluidRow(
@@ -556,10 +672,45 @@ actionButton("refresh", "Startover")
                            )
                          )
                          ),
-                tabPanel("Summary", 
-                         h4("Summary")
+                tabPanel("Rankings", 
+                         h4("Based on our model, we have ranked all teams and players"),
+                         br(),
+                         h4("Top 10 Teams"),
+                         verbatimTextOutput('teams'),
+                         br(),
+                         h4("Top 5 Players"),
+                         verbatimTextOutput('player'),
+                         br(),
+                         p("We have a good model that all of the top 5 players under this model were selected by NBA and most of them were selected in the first round:"),
+                         verbatimTextOutput('nba'),
+                         img(src='mcdermott.png', align = "left", height = 200),
+                         img(src='anderson.png', align = "left", height = 200),
+                         img(src='harrell.png', align = "left", height = 200),
+                         fluidRow(
+                           column(width = 3,offset = 2,
+                                  img(src='smith.png', align = "left", height = 200)
+                           ),
+                           column(width = 3,offset = 1,
+                                  img(src='randle.png', align = "left", height = 200)
+                           )
+                         )
+                         
                          ),
-                tabPanel("About us", h4("This is a Final Group Project for STOR 320 by Zhenwei Zhang, Logan Rowland and Brynna Wainwright"))
+                tabPanel("About us", 
+                         br(),
+                  h4("This is a Final Group Project for STOR 320 by"),
+                  br(),
+                  h4("Zhenwei Zhang"),
+                  h5("Email: zhenwei@live.unc.edu"),
+                  br(),
+                  h4("Logan Rowland"),
+                  h5( "Email: logrow@live.unc.edu"),
+                  br(),
+                  h4("Brynna Wainwright"),
+                  h5( "Email: brynnaw@live.unc.edu")
+
+                        
+)
     )
   )
 )
