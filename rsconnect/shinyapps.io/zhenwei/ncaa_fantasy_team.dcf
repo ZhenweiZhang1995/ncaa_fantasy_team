@@ -1,0 +1,12 @@
+name: ncaa_fantasy_team
+title: ncaa_fantasy_team
+username:
+account: zhenwei
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 243141
+bundleId: 1111383
+url: https://zhenwei.shinyapps.io/ncaa_fantasy_team/
+when: 1512268377.26216
+asMultiple: FALSE
+asStatic: FALSE

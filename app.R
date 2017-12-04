@@ -8,13 +8,13 @@ library(shinyjs)
 
 server <- shinyServer(function(input, output,session) {
   
-  player_data <- read.csv("player_data.csv")
-  players <- select(player_data,School,Year,Name,points_avg,rebounds_avg,assists_avg,blocks_avg,steals_avg,position,weighted_rat)
-  players_public <- select(player_data,School,Year,Name,points_avg,rebounds_avg,assists_avg,blocks_avg,steals_avg,position)
+  player_data <- read.csv("players_data_final.csv")
+  players <- select(player_data,School,Year,Name,points_avg,rebounds_avg,assists_avg,blocks_avg,steals_avg,position,player_rating)
+  players_public <- select(player_data,Name,points_avg,rebounds_avg,assists_avg,blocks_avg,steals_avg)
   
   get_fantasy_ratings <- function(name1,name2,name3,name4,name5){
     rating_table <- filter(players,players$Name == name1 | players$Name == name2 | players$Name == name3 | players$Name == name4 | players$Name == name5)
-    rating <- sum(rating_table$weighted_rat)
+    rating <- sum(rating_table$player_rating)
     return(rating)
   }
   
@@ -48,10 +48,7 @@ server <- shinyServer(function(input, output,session) {
       inputId = "School2", 
       label = "School:",
       choices = as.character(unique(player_data$School)),
-      options = list(
-        placeholder = 'Select a team below',
-        onInitialize = I('function() { this.setValue(""); }')
-      ))
+      selected = "Duke")
     
   })
 
@@ -111,10 +108,7 @@ server <- shinyServer(function(input, output,session) {
       inputId = "position2", 
       label = "Position:",
       choices = as.character(unique(player_data$position)),
-      options = list(
-        placeholder = 'Select a position below',
-        onInitialize = I('function() { this.setValue(""); }')
-      ))
+      selected = unique(player_data$position)[1])
     
   })
   
@@ -234,9 +228,9 @@ server <- shinyServer(function(input, output,session) {
     
     maxmin <- data.frame(
       
-      points=c(17, 0),
+      points=c(18, 0),
       
-      rebounds=c(8, 0),
+      rebounds=c(10, 0),
       
       assists=c(7, 0),
       
@@ -260,10 +254,10 @@ server <- shinyServer(function(input, output,session) {
     dat.A1 <-unfactor(dat.A1)
     dat.A2<-rbind(maxmin,dat.A1)
     
-    colors_border=c( rgb(0.2,0.5,0.5,0.8), rgb(0.4,0,0.8,0.8))
-    colors_in=c( rgb(0.2,0.5,0.5,0.5), rgb(0.4,0,0.8,0.5))
+    colors_border=c( rgb(0,0.6,1,0.8), rgb(0.4,0,0.8,0.8))
+    colors_in=c( rgb(0,0.6,1,0.5), rgb(0.4,0,0.8,0.5))
     
-    radarchart( dat.A2 , axistype=1 , 
+    radarchart( dat.A2 , axistype=2 , 
                 
                 #custom polygon
                 pcol=colors_border , pfcol=colors_in , plwd=4 , plty=1,
@@ -291,9 +285,9 @@ server <- shinyServer(function(input, output,session) {
     
     maxmin <- data.frame(
       
-      points=c(17, 0),
+      points=c(18, 0),
       
-      rebounds=c(8, 0),
+      rebounds=c(10, 0),
       
       assists=c(7, 0),
       
@@ -317,10 +311,10 @@ server <- shinyServer(function(input, output,session) {
     dat.A1 <-unfactor(dat.A1)
     dat.A2<-rbind(maxmin,dat.A1)
     
-    colors_border=c( rgb(0.2,0.5,0.5,0.8), rgb(0.4,0,0.8,0.8))
-    colors_in=c( rgb(0.2,0.5,0.5,0.5), rgb(0.4,0,0.8,0.5))
+    colors_border=c( rgb(0,0.6,1,0.8), rgb(0.4,0,0.8,0.8))
+    colors_in=c( rgb(0,0.6,1,0.5), rgb(0.4,0,0.8,0.5))
     
-    radarchart( dat.A2 , axistype=1 , 
+    radarchart( dat.A2 , axistype=2 , 
                 
                 #custom polygon
                 pcol=colors_border , pfcol=colors_in , plwd=4 , plty=1,
@@ -347,9 +341,9 @@ server <- shinyServer(function(input, output,session) {
     
     maxmin <- data.frame(
       
-      points=c(17, 0),
+      points=c(18, 0),
       
-      rebounds=c(8, 0),
+      rebounds=c(10, 0),
       
       assists=c(7, 0),
       
@@ -373,10 +367,10 @@ server <- shinyServer(function(input, output,session) {
     dat.A1 <-unfactor(dat.A1)
     dat.A2<-rbind(maxmin,dat.A1)
     
-    colors_border=c( rgb(0.2,0.5,0.5,0.8), rgb(0.4,0,0.8,0.8))
-    colors_in=c( rgb(0.2,0.5,0.5,0.5), rgb(0.4,0,0.8,0.5))
+    colors_border=c( rgb(0,0.6,1,0.8), rgb(0.4,0,0.8,0.8))
+    colors_in=c( rgb(0,0.6,1,0.5), rgb(0.4,0,0.8,0.5))
     
-    radarchart( dat.A2 , axistype=1 , 
+    radarchart( dat.A2 , axistype=2 , 
                 
                 #custom polygon
                 pcol=colors_border , pfcol=colors_in , plwd=4 , plty=1,
@@ -403,9 +397,9 @@ server <- shinyServer(function(input, output,session) {
     
     maxmin <- data.frame(
       
-      points=c(17, 0),
+      points=c(18, 0),
       
-      rebounds=c(8, 0),
+      rebounds=c(10, 0),
       
       assists=c(7, 0),
       
@@ -429,10 +423,10 @@ server <- shinyServer(function(input, output,session) {
     dat.A1 <-unfactor(dat.A1)
     dat.A2<-rbind(maxmin,dat.A1)
     
-    colors_border=c( rgb(0.2,0.5,0.5,0.8), rgb(0.4,0,0.8,0.8))
-    colors_in=c( rgb(0.2,0.5,0.5,0.5), rgb(0.4,0,0.8,0.5))
+    colors_border=c( rgb(0,0.6,1,0.8), rgb(0.4,0,0.8,0.8))
+    colors_in=c( rgb(0,0.6,1,0.5), rgb(0.4,0,0.8,0.5))
     
-    radarchart( dat.A2 , axistype=1 , 
+    radarchart( dat.A2 , axistype=2 , 
                 
                 #custom polygon
                 pcol=colors_border , pfcol=colors_in , plwd=4 , plty=1,
@@ -459,9 +453,9 @@ server <- shinyServer(function(input, output,session) {
     
     maxmin <- data.frame(
       
-      points=c(17, 0),
+      points=c(18, 0),
       
-      rebounds=c(8, 0),
+      rebounds=c(10, 0),
       
       assists=c(7, 0),
       
@@ -485,10 +479,10 @@ server <- shinyServer(function(input, output,session) {
     dat.A1 <-unfactor(dat.A1)
     dat.A2<-rbind(maxmin,dat.A1)
     
-    colors_border=c( rgb(0.2,0.5,0.5,0.8), rgb(0.4,0,0.8,0.8))
-    colors_in=c( rgb(0.2,0.5,0.5,0.5), rgb(0.4,0,0.8,0.5))
+    colors_border=c( rgb(0,0.6,1,0.8), rgb(0.4,0,0.8,0.8))
+    colors_in=c( rgb(0,0.6,1,0.5), rgb(0.4,0,0.8,0.5))
     
-    radarchart( dat.A2 , axistype=1 , 
+    radarchart( dat.A2 , axistype=2 , 
                 
                 #custom polygon
                 pcol=colors_border , pfcol=colors_in , plwd=4 , plty=1,
@@ -550,14 +544,14 @@ server <- shinyServer(function(input, output,session) {
   })
   
   output$player <- renderPrint({
-    player_rank <- arrange(players,desc(weighted_rat))
+    player_rank <- arrange(players,desc(player_rating))
     player_rank <-player_rank %>% select(Name,School,position)
     head(player_rank, n=5)
   })
   
   output$teams <- renderPrint({
     by_team <- group_by(players,School) %>% 
-      summarise(Rating = mean(weighted_rat)) %>% 
+      summarise(Rating = mean(player_rating)) %>% 
       as.data.frame
     by_team <- arrange(by_team,desc(Rating))
     by_team <- select(by_team,School)
@@ -578,6 +572,10 @@ server <- shinyServer(function(input, output,session) {
 })
 
 ui <-fluidPage(useShinyjs(), 
+               
+  tags$head(
+           tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
+            ),             
   titlePanel(" NCAA Men's Basketball Fantasy Team"),
   sidebarPanel(
     div(
@@ -639,40 +637,40 @@ actionButton("refresh", "Restart")
     tabsetPanel(type = "tabs",
                 tabPanel("Fantasy Team", 
                          br(),
-                         p("Wlecome to the NCAA Fantasy Team app, here you can create your fantasy team by slecting 5 players from different teams and you can will get a fianl score after you click 'CREATE'"),
+                         p("Wlecome to the NCAA Fantasy Team app, here you can create your fantasy team by slecting 5 players from different teams and you can will get a final score after you click 'CREATE'"),
                          p("Each player you choose will generate a radar cart on the right to visualize this player's skill"),
                          p("(This app use NCAA player and team data from 2014-2015 season)"),
                          
                          br(),
                          verbatimTextOutput('row'),
                          fluidRow(
-                           column(width = 6,
+                           column(width = 5,
                                   h4("Player 1"),
                                   plotOutput('radar_chart1',height="500px")
                            ),
-                           column(width = 6,
+                           column(width = 5,
                                   h4("Player 2"),
                                   plotOutput('radar_chart2',height="500px")
                            )
                          ),
                          fluidRow(
-                           column(width = 6,
+                           column(width = 5,
                                   h4("Player 3"),
                                   plotOutput('radar_chart3',height="500px")
                            ),
-                           column(width = 6,
+                           column(width = 5,
                                   h4("Player 4"),
                                   plotOutput('radar_chart4',height="500px")
                            )
                          ),
                          fluidRow(
-                           column(width = 6,
+                           column(width = 5,
                                   h4("Player 5"),
                                   plotOutput('radar_chart5',height="500px")
                            )
                          )
                          ),
-                tabPanel("Rankings", 
+                tabPanel("Rankings & Predictions", 
                          h4("Based on our model, we have ranked all teams and players"),
                          br(),
                          h4("Top 10 Teams"),
@@ -686,14 +684,8 @@ actionButton("refresh", "Restart")
                          img(src='mcdermott.png', align = "left", height = 200),
                          img(src='anderson.png', align = "left", height = 200),
                          img(src='harrell.png', align = "left", height = 200),
-                         fluidRow(
-                           column(width = 3,offset = 2,
-                                  img(src='smith.png', align = "left", height = 200)
-                           ),
-                           column(width = 3,offset = 1,
-                                  img(src='randle.png', align = "left", height = 200)
-                           )
-                         )
+                         img(src='smith.png', align = "left", height = 200),
+                         img(src='randle.png', align = "left", height = 200)
                          
                          ),
                 tabPanel("About us", 
